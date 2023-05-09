@@ -5,6 +5,9 @@ class TutorialZone extends AdventureScene {
     preload() {
         this.load.path = "./assets/";
         this.load.image('plains', 'TutorialZone.png');
+        this.load.image('adrian', 'Adrian.png');
+        this.load.image('sword', 'Sword.png');
+        this.load.image('arrow', 'Arrow.png');
     }
     onEnter() {
         const plains = this.add.image(0, 0, 'plains');
@@ -12,90 +15,392 @@ class TutorialZone extends AdventureScene {
         plains.setOrigin(0);
         plains.setDepth(-1);
 
-        let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
-            .setFontSize(this.s * 2)
-            .setInteractive()
-            .on('pointerover', () => this.showMessage("Metal, bent."))
+        let adrian = this.add.image(
+            480,
+            360,
+            'adrian'
+            );
+            adrian.setInteractive()
+            .setOrigin(0.5,0.5)
             .on('pointerdown', () => {
-                this.showMessage("No touching!");
-                this.tweens.add({
-                    targets: clip,
-                    x: '+=' + this.s,
-                    repeat: 2,
+                this.showMessage("What's up dog");
+                this.add.tween({
+                    targets: adrian,
+                    y: '-=' + this.s,
                     yoyo: true,
                     ease: 'Sine.inOut',
                     duration: 100
                 });
-            });
-
-        let key = this.add.text(this.w * 0.5, this.w * 0.1, "🔑 key")
-            .setFontSize(this.s * 2)
-            .setInteractive()
+        });
+        let sword = this.add.image(
+            170,
+            500,
+            'sword',
+            );
+            sword.setInteractive()
             .on('pointerover', () => {
-                this.showMessage("It's a nice key.")
+                this.showMessage("This may be useful in my adventure.");
             })
             .on('pointerdown', () => {
-                this.showMessage("You pick up the key.");
-                this.gainItem('key');
+                this.showMessage("Let me get strapped real quick.");
+                this.gainItem('Sword');
                 this.tweens.add({
-                    targets: key,
+                    targets: sword,
                     y: `-=${2 * this.s}`,
                     alpha: { from: 1, to: 0 },
                     duration: 500,
-                    onComplete: () => key.destroy()
-                });
-            })
+                    onComplete: () => sword.destroy()
+            });
+        });
 
-        let door = this.add.text(this.w * 0.1, this.w * 0.15, "🚪 locked door")
-            .setFontSize(this.s * 2)
+        let arrow = this.add.image(
+            900,
+            360,
+            'arrow',
+            );
+            arrow.setOrigin(0.5,0.5)
             .setInteractive()
             .on('pointerover', () => {
-                if (this.hasItem("key")) {
-                    this.showMessage("You've got the key for this door.");
-                } else {
-                    this.showMessage("It's locked. Can you find a key?");
-                }
+                this.showMessage("Advance deeper...");
             })
             .on('pointerdown', () => {
-                if (this.hasItem("key")) {
-                    this.loseItem("key");
-                    this.showMessage("*squeak*");
-                    door.setText("🚪 unlocked door");
-                    this.gotoScene('demo2');
+                if(this.hasItem('Sword')) {
+                    this.showMessage("Onward!");
+                    this.gotoScene('foresthub');
+                } else {
+                    this.showMessage("Maybe I should get that sword for what's to come.");
+                    this.add.tween({
+                        targets: arrow,
+                        x: '-=' + this.s,
+                        repeat: 2,
+                        yoyo: true,
+                        ease: 'Sine.inOut',
+                        duration: 100
+                    });
                 }
-            })
+        });
 
+        this.add.tween({
+            targets: sword,
+            scale: 1.1,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
     }
 }
 
-class Demo2 extends AdventureScene {
+class ForestHub extends AdventureScene {
     constructor() {
-        super("demo2", "The second room has a long name (it truly does).");
+        super("foresthub", "Forest");
+    }
+    preload() {
+        this.load.path = "./assets/";
+        this.load.image('foresthub', 'ForestHub.png');
+        this.load.image('adrian', 'Adrian.png');
+        this.load.image('arrow', 'Arrow.png');
     }
     onEnter() {
-        this.add.text(this.w * 0.3, this.w * 0.4, "just go back")
-            .setFontSize(this.s * 2)
+        const forestHub = this.add.image(0, 0, 'foresthub');
+        forestHub.setScale(0.48);
+        forestHub.setOrigin(0);
+        forestHub.setDepth(-1);
+
+        let adrian = this.add.image(
+            480,
+            360,
+            'adrian'
+            );
+            adrian.setInteractive()
+            .setOrigin(0.5,0.5)
+            .on('pointerdown', () => {
+                this.showMessage("What's up dog");
+                this.add.tween({
+                    targets: adrian,
+                    y: '-=' + this.s,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+        });
+
+        let upArrow = this.add.image(
+            480,
+            150,
+            'arrow',
+            );
+            upArrow.setOrigin(0.5,0.5)
             .setInteractive()
+            .setRotation(Phaser.Math.DegToRad(-90))
             .on('pointerover', () => {
-                this.showMessage("You've got no other choice, really.");
+                this.showMessage("Into the Cave...");
             })
             .on('pointerdown', () => {
-                this.gotoScene('tutorialzone');
-            });
+                this.showMessage("To the cave I go!");
+                this.gotoScene('cavetunnel');
+        });
 
-        let finish = this.add.text(this.w * 0.6, this.w * 0.2, '(finish the game)')
+        let rightArrow = this.add.image(
+            850,
+            360,
+            'arrow',
+            );
+            rightArrow.setOrigin(0.5,0.5)
             .setInteractive()
             .on('pointerover', () => {
-                this.showMessage('*giggles*');
-                this.tweens.add({
-                    targets: finish,
-                    x: this.s + (this.h - 2 * this.s) * Math.random(),
-                    y: this.s + (this.h - 2 * this.s) * Math.random(),
-                    ease: 'Sine.inOut',
-                    duration: 500
-                });
+                this.showMessage("To the unknown.. D:");
             })
-            .on('pointerdown', () => this.gotoScene('outro'));
+            .on('pointerdown', () => {
+                this.showMessage("Let's get it!");
+                this.gotoScene('dragonsden');
+        });
+
+        let downArrow = this.add.image(
+            480,
+            530,
+            'arrow',
+            );
+            downArrow.setOrigin(0.5,0.5)
+            .setInteractive()
+            .setRotation(Phaser.Math.DegToRad(90))
+            .on('pointerover', () => {
+                this.showMessage("Into the welcoming House...");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("Knock Knock I'm coming in!");
+                this.gotoScene('house');
+        });
+
+        // let finish = this.add.text(this.w * 0.6, this.w * 0.2, '(finish the game)')
+        //     .setInteractive()
+        //     .on('pointerover', () => {
+        //         this.showMessage('*giggles*');
+        //         this.tweens.add({
+        //             targets: finish,
+        //             x: this.s + (this.h - 2 * this.s) * Math.random(),
+        //             y: this.s + (this.h - 2 * this.s) * Math.random(),
+        //             ease: 'Sine.inOut',
+        //             duration: 500
+        //         });
+        //     })
+        //     .on('pointerdown', () => this.gotoScene('outro'));
+    }
+}
+
+class CaveTunnel extends AdventureScene {
+    constructor() {
+        super("cavetunnel", "Cave Tunnel");
+    }
+    preload() {
+        this.load.path = "./assets/";
+        this.load.image('cavetunnel', 'CavelTunnel.png');
+        this.load.image('adrian', 'Adrian.png');
+        this.load.image('frozenzarolls', 'pizzarolls.png');
+        this.load.image('arrow', 'Arrow.png');
+    }
+    onEnter() {
+        const caveTunnel = this.add.image(0, 0, 'cavetunnel');
+        caveTunnel.setScale(0.48);
+        caveTunnel.setOrigin(0);
+        caveTunnel.setDepth(-1);
+
+        let adrian = this.add.image(
+            480,
+            360,
+            'adrian'
+            );
+            adrian.setInteractive()
+            .setOrigin(0.5,0.5)
+            .on('pointerdown', () => {
+                this.showMessage("What's up dog");
+                this.add.tween({
+                    targets: adrian,
+                    y: '-=' + this.s,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+        });
+
+        let pizzarolls = this.add.image(
+            360,
+            500,
+            'frozenzarolls',
+            );
+            pizzarolls.setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Woah free pizza rolls here?!");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("YOINK! Can't wait to munch on these later.");
+                this.gainItem('Pizza Rolls');
+                this.tweens.add({
+                    targets: pizzarolls,
+                    y: `-=${2 * this.s}`,
+                    alpha: { from: 1, to: 0 },
+                    duration: 500,
+                    onComplete: () => pizzarolls.destroy()
+            });
+        });
+
+        let upArrow = this.add.image(
+            480,
+            100,
+            'arrow',
+            );
+            upArrow.setOrigin(0.5,0.5)
+            .setInteractive()
+            .setRotation(Phaser.Math.DegToRad(-90))
+            .on('pointerover', () => {
+                this.showMessage("Into the Unknown.. D:");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("Let's get it!");
+                this.gotoScene('dragonsden');
+        });
+
+        let downArrow = this.add.image(
+            480,
+            620,
+            'arrow',
+            );
+            downArrow.setOrigin(0.5,0.5)
+            .setInteractive()
+            .setRotation(Phaser.Math.DegToRad(90))
+            .on('pointerover', () => {
+                this.showMessage("Back to the forest...");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("Aight Ima head out");
+                this.gotoScene('foresthub');
+        });
+
+        this.add.tween({
+            targets: pizzarolls,
+            scale: 1.1,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+    }
+}
+
+class House extends AdventureScene {
+    constructor() {
+        super("house", "A Nice House");
+    }
+    preload() {
+        this.load.path = "./assets/";
+        this.load.image('house', '4House.png');
+        this.load.image('adrian', 'Adrian.png');
+        this.load.image('airfryer', 'Air Fryer.png');
+        this.load.image('arrow', 'Arrow.png');
+    }
+    onEnter() {
+        const house = this.add.image(0, 0, 'house');
+        house.setScale(0.48);
+        house.setOrigin(0);
+        house.setDepth(-1);
+
+        this.add.text(610, 230, "DANGER", {
+            fontFamily: 'Impact',
+            fontSize: 30,
+            color: '#8B0000',
+            align: 'center'
+        }).setOrigin(0.5,0.5).setRotation(Phaser.Math.DegToRad(-30));
+
+        let adrian = this.add.image(
+            620,
+            470,
+            'adrian'
+            );
+            adrian.setInteractive()
+            .setOrigin(0.5,0.5)
+            .on('pointerdown', () => {
+                this.showMessage("What's up dog");
+                this.add.tween({
+                    targets: adrian,
+                    y: '-=' + this.s,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+        });
+
+        let airFryer = this.add.image(
+            455,
+            452,
+            'airfryer',
+            );
+            airFryer.setInteractive()
+            .setScale(0.5,0.5)
+            .setOrigin(0.5,1)
+            .on('pointerover', () => {
+                this.showMessage("An Air Fryer I could cook something with...");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("I'll be borrowing this if anyone is here. Thanks!");
+                this.gainItem('Air Fryer');
+                this.tweens.add({
+                    targets: airFryer,
+                    y: `-=${2 * this.s}`,
+                    alpha: { from: 1, to: 0 },
+                    duration: 500,
+                    onComplete: () => airFryer.destroy()
+            });
+        });
+
+        let upArrow = this.add.image(
+            707,
+            320,
+            'arrow',
+            );
+            upArrow.setOrigin(0.5,0.5)
+            .setInteractive()
+            .setRotation(Phaser.Math.DegToRad(-90))
+            .on('pointerover', () => {
+                this.showMessage("Into the Unknown.. D:");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("Let's get it!");
+                this.gotoScene('dragonsden');
+        });
+
+        let downArrow = this.add.image(
+            480,
+            590,
+            'arrow',
+            );
+            downArrow.setOrigin(0.5,0.5)
+            .setInteractive()
+            .setRotation(Phaser.Math.DegToRad(90))
+            .on('pointerover', () => {
+                this.showMessage("Back to the forest...");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("Aight Ima head out");
+                this.gotoScene('foresthub');
+        });
+
+        this.add.tween({
+            targets: airFryer,
+            scale: 0.52,
+            duration: 700,
+            yoyo: true,
+            repeat: -1
+        });
+    }
+}
+
+class DragonsDen extends AdventureScene {
+    constructor() {
+        super("dragonsden", "THE DRAGON'S DEN");
+    }
+    preload() {
+
+    }
+    onEnter() {
+        
     }
 }
 
@@ -332,8 +637,11 @@ const game = new Phaser.Game({
         height: 720
     },
     backgroundColor: 0x78909C,
-    //BeginIntro, StudioIntro, TitleIntro, 
-    scene: [TutorialZone, Demo2, Outro],
+    //BeginIntro, StudioIntro, TitleIntro, TutorialZone, ForestHub, CaveTunnel
+    scene: [ForestHub, CaveTunnel, House, DragonsDen, Outro],
     title: "Adventure Game",
 });
+
+// MAKE A CLEANUP SCENE IN ADVENTURE.JS FOR 1 ENHNACMENET
+// TAKE AN ARRAY OF REFERENCED OBJECTS AND FOR EACH THEM DESTROY IF HAS ITEM
 
