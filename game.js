@@ -1,9 +1,16 @@
-class Demo1 extends AdventureScene {
+class TutorialZone extends AdventureScene {
     constructor() {
-        super("demo1", "First Room");
+        super("tutorialzone", "Plains");
     }
-
+    preload() {
+        this.load.path = "./assets/";
+        this.load.image('plains', 'TutorialZone.png');
+    }
     onEnter() {
+        const plains = this.add.image(0, 0, 'plains');
+        plains.setScale(0.48);
+        plains.setOrigin(0);
+        plains.setDepth(-1);
 
         let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
             .setFontSize(this.s * 2)
@@ -73,7 +80,7 @@ class Demo2 extends AdventureScene {
                 this.showMessage("You've got no other choice, really.");
             })
             .on('pointerdown', () => {
-                this.gotoScene('demo1');
+                this.gotoScene('tutorialzone');
             });
 
         let finish = this.add.text(this.w * 0.6, this.w * 0.2, '(finish the game)')
@@ -144,7 +151,7 @@ class StudioIntro extends Phaser.Scene {
     create() {
         //preload studio text
         let studioText = this.add.text(
-            520,
+            680,
             400,
             "Green\nCheeze\nStudios",
             {
@@ -181,7 +188,8 @@ class StudioIntro extends Phaser.Scene {
             ],
             frameRate: 15, // frames per second
         });
-        let fridge = this.add.sprite(480, 250, 'gfc');
+        let fridge = this.add.sprite(640, 250, 'gfc');
+        fridge.setOrigin(0.5,0.5);
         fridge.setScale(0,0);
         studioText.depth = fridge.depth + 1;
         this.tweens.add({
@@ -203,13 +211,14 @@ class StudioIntro extends Phaser.Scene {
                         yoyo: true,
                         onComplete: () => {
                             fridge.setScale(0);
-                            let fridgeClosed = this.add.sprite(480, 250, 'gfo').setScale(0.47);
+                            let fridgeClosed = this.add.sprite(640, 250, 'gfo').setScale(0.47);
+                            fridgeClosed.setOrigin(0.5,0.5);
                             fridgeClosed.play('GreenFridgeCloseAnimation');
                             this.sound.play('sfxClose');
                             fridgeClosed.on('animationcomplete', () => {
                                 // Click to begin text
                                 let beginText = this.add.text(
-                                    480,
+                                    640,
                                     500,
                                     "Click anywhere\nto begin...",
                                     {
@@ -259,14 +268,16 @@ class TitleIntro extends Phaser.Scene {
     }
     create() {
         // Create the background image object
-        let backgroundImage = this.add.image(0, 0, 'titleScreen');
+        const titleScreen = this.add.image(0, 0, 'titleScreen');
 
         // Set the background image to the center of the game canvas
-        backgroundImage.setOrigin(0.5, 0.5);
-        backgroundImage.setPosition(this.game.config.width / 2, this.game.config.height / 2);
+        titleScreen.setOrigin(0.5, 0.5);
+        titleScreen.setPosition(this.game.config.width / 2, this.game.config.height / 2);
+
+        this.add.rectangle(0, 575, 1280, 145).setOrigin(0, 0).setFillStyle(0x764C29);
 
         // Load play text
-        let playText = this.add.text(480, 360, "PLAY", {
+        let playText = this.add.text(640, 360, "PLAY", {
             fontFamily: "'Press Start 2P', sans-serif",
             fontWeight: 400,
             fontStyle: 'normal',
@@ -296,7 +307,7 @@ class TitleIntro extends Phaser.Scene {
 
         playText.on('pointerdown', () => {
             this.cameras.main.fadeOut(1000, 0, 0, 0);
-            this.time.delayedCall(1000, () => this.scene.start('demo1'));
+            this.time.delayedCall(1000, () => this.scene.start('tutorialzone'));
         });
     }
 }
@@ -317,11 +328,12 @@ const game = new Phaser.Game({
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 960,
+        width: 1280,
         height: 720
     },
     backgroundColor: 0x78909C,
-    scene: [BeginIntro, StudioIntro, TitleIntro, Demo1, Demo2, Outro],
+    //BeginIntro, StudioIntro, TitleIntro, 
+    scene: [TutorialZone, Demo2, Outro],
     title: "Adventure Game",
 });
 
