@@ -5,6 +5,10 @@ class TutorialZone extends AdventureScene {
     preload() {
         this.load.path = "./assets/";
         this.load.image('plains', 'TutorialZone.png');
+        this.load.image('foresthub', 'ForestHub.png');
+        this.load.image('cavetunnel', 'CavelTunnel.png');
+        this.load.image('dragonsden', 'DragonsDen.png');
+        this.load.image('house', '4House.png');
         this.load.image('adrian', 'Adrian.png');
         this.load.image('sword', 'Sword.png');
         this.load.image('arrow', 'Arrow.png');
@@ -52,6 +56,8 @@ class TutorialZone extends AdventureScene {
                     onComplete: () => sword.destroy()
             });
         });
+
+        this.cleanup(['Sword', sword]);
 
         let arrow = this.add.image(
             900,
@@ -233,7 +239,7 @@ class CaveTunnel extends AdventureScene {
             })
             .on('pointerdown', () => {
                 this.showMessage("YOINK! Can't wait to munch on these later.");
-                this.gainItem('Pizza Rolls');
+                this.gainItem('Frozen Pizza Rolls');
                 this.tweens.add({
                     targets: pizzarolls,
                     y: `-=${2 * this.s}`,
@@ -242,6 +248,7 @@ class CaveTunnel extends AdventureScene {
                     onComplete: () => pizzarolls.destroy()
             });
         });
+        this.cleanup(['Frozen Pizza Rolls', pizzarolls]);
 
         let upArrow = this.add.image(
             480,
@@ -350,6 +357,7 @@ class House extends AdventureScene {
             });
         });
 
+        this.cleanup(['Air Fryer', airFryer]);
         let upArrow = this.add.image(
             707,
             320,
@@ -397,10 +405,175 @@ class DragonsDen extends AdventureScene {
         super("dragonsden", "THE DRAGON'S DEN");
     }
     preload() {
-
+        this.load.path = "./assets/";
+        this.load.image('dragonsden', 'DragonsDen.png');
+        this.load.image('adrian', 'Adrian.png');
+        this.load.image('dragon', 'Dragon.png');
+        this.load.image('arrow', 'Arrow.png');
     }
     onEnter() {
-        
+        const dragonsDen = this.add.image(0, 0, 'dragonsden');
+        dragonsDen.setScale(0.48);
+        dragonsDen.setOrigin(0);
+        dragonsDen.setDepth(-1);
+
+        let adrian = this.add.image(
+            270,
+            360,
+            'adrian'
+            );
+            adrian.setInteractive()
+            .setOrigin(0.5,0.5)
+            .on('pointerdown', () => {
+                this.showMessageColor("What's up dog", 0xABAB7A);
+                this.add.tween({
+                    targets: adrian,
+                    y: '-=' + this.s,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+        });
+
+        function attackMsg() {
+            return "A: to attack with sword\n"
+        };
+        function cookMsg(scene) {
+            if(scene.hasItem('Air Fryer') && scene.hasItem('Frozen Pizza Rolls')) {
+                return "C: to cook pizza rolls\n"
+            } else {
+                return ""
+            }
+        }
+
+        function spewLavaMsg(scene) {
+            if(scene.hasItem('Burning Hot Pizza Rolls')) {
+                return "E: to eat them rn"
+            } else {
+                return ""
+            }
+        }
+        let dragon = this.add.image(
+            600,
+            360,
+            'dragon',
+            );
+            dragon.setInteractive()
+            .setScale(2)
+            .setOrigin(0.5,0.5)
+            .on('pointerover', () => {
+                this.showMessageColor("HOLY SLUG! ITS A DRAGON", 0xff0000);
+            })
+            .on('pointerdown', () => {
+                this.showMessageColor("He looks hungry for me.\n" + attackMsg() + cookMsg(this) + spewLavaMsg(this), 0xFFAE42);
+                this.tweens.add({
+                    targets: dragon,
+                    x: '+=' + this.s,
+                    repeat: 2,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+        });
+
+        this.input.keyboard.on('keydown-A', () => {
+            this.loseItem("Sword");
+            this.showMessageColor("Let's tussle!...", 0x00ff00);
+            this.time.delayedCall(2000, () => {
+                this.showMessageColor("\nWait my sword broke and didn't do ANYTHING!", 0xffff00);
+            })
+            this.time.delayedCall(5000, () => {
+                this.showMessageColor("\nNOOOOOO!", 0xff0000);
+                this.tweens.add({
+                    targets: adrian,
+                    alpha: { from: 1, to: 0 },
+                    duration: 2000,
+                    onComplete: () => {
+                        adrian.destroy();
+                        this.time.delayedCall(1000, () => {
+                            this.gotoScene('lossoutro');
+                        });
+                    }
+                });
+            })
+        });
+
+        this.input.keyboard.on('keydown-C', () => {
+            if(this.hasItem("Frozen Pizza Rolls") && this.hasItem("Air Fryer")) {
+                this.loseItem("Frozen Pizza Rolls");
+                this.loseItem("Air Fryer");
+                this.gainItem("Burning Hot Pizza Rolls");
+                this.showMessageColor("Hol up Dragon LET ME COOK.", 0x00ff00)
+                this.time.delayedCall(3000, () => {
+                    this.showMessageColor("\nAight now what...", 0x00ff00);
+                })
+            }
+        });
+
+        this.input.keyboard.on('keydown-E', () => {
+            if(this.hasItem("Burning Hot Pizza Rolls")) {
+                this.loseItem("Burning Hot Pizza Rolls");
+                this.showMessageColor("HOLY CRAP ITS SO HOT.", 0xff0000);
+                this.time.delayedCall(1000, () => {
+                    this.showMessageColor("\n*SPEWS ZA LAVA AT DRAGON*", 0x00ff00);
+                    this.tweens.add({
+                        targets: dragon,
+                        alpha: { from: 1, to: 0 },
+                        duration: 2000,
+                        onComplete: () => {
+                            dragon.destroy();
+                            this.time.delayedCall(1000, () => {
+                                this.showMessageColor("\nOH MY GOD! LETS GOOOOO!", 0x00ff00);
+                                this.time.delayedCall(1000, () => {
+                                    this.gotoScene('victoryoutro');
+                                });
+                            });
+                        }
+                    });
+                })
+            }
+        });
+
+
+        let backArrow = this.add.image(
+            100,
+            360,
+            'arrow',
+            );
+            backArrow.setOrigin(0.5,0.5)
+            .setInteractive()
+            .setRotation(Phaser.Math.DegToRad(-180))
+            .on('pointerover', () => {
+                this.showMessage("RUN?! Unless...");
+            })
+            .on('pointerdown', () => {
+                this.showMessage("IM OUT BRO!");
+                this.gotoScene('foresthub');
+        });
+
+        this.add.tween({
+            targets: dragon,
+            //scale: 1.05,
+            scale: 2.1,
+            duration: 800,
+            yoyo: true,
+            repeat: -1
+        });
+
+        // // Create a button object
+        // let button = this.add.image(100, 100, 'button').setInteractive();
+
+        // // Add a text label to the button
+        // let buttonText = this.add.text(100, 100, 'Click me', { fontFamily: 'Arial', fontSize: 24, color: '#000000' });
+        // buttonText.setOrigin(0.5);
+
+        // // Center the button text on the button image
+        // Phaser.Display.Align.In.Center(buttonText, button);
+
+        // // Add a pointerdown event listener to the button
+        // button.on('pointerdown', function (pointer) {
+        //     console.log('Button clicked!');
+        // });
     }
 }
 
@@ -617,14 +790,77 @@ class TitleIntro extends Phaser.Scene {
     }
 }
 
-class Outro extends Phaser.Scene {
+class LossOutro extends Phaser.Scene {
     constructor() {
-        super('outro');
+        super('lossoutro');
+    }
+    preload() {
+        this.load.path = "./assets/";
+        this.load.image('lossscreen', 'LossScreen.png');
     }
     create() {
-        this.add.text(50, 50, "That's all!").setFontSize(50);
-        this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
-        this.input.on('pointerdown', () => this.scene.start('intro'));
+        const lossScreen = this.add.image(150, 0, 'lossscreen');
+        lossScreen.setScale(0.48);
+        lossScreen.setOrigin(0);
+        lossScreen.setDepth(-1);
+
+        this.add.text(50, 50, "The Dragon killed you\nand added you to their bone pile.", {
+            stroke: '#000000',
+            strokeThickness: 5,
+            fill: '#00ff00'
+        }).setFontSize(50);
+        this.add.text(50, 150, "Click anywhere to restart.", {
+            stroke: '#000000',
+            strokeThickness: 5,
+        }).setFontSize(20);
+        this.input.on('pointerdown', () => this.scene.start('titleintro'));
+    }
+}
+
+class VictoryOutro extends Phaser.Scene {
+    constructor() {
+        super('victoryoutro');
+    }
+    preload() {
+        this.load.path = "./assets/";
+        this.load.image('victoryscreen', 'DragonsDen.png');
+        this.load.image('adrian', 'Adrian.png');
+    }
+    create() {
+        const victoryScreen = this.add.image(150, 0, 'victoryscreen');
+        victoryScreen.setScale(0.48);
+        victoryScreen.setOrigin(0);
+        victoryScreen.setDepth(-1);
+
+        let adrian = this.add.image(
+            620,
+            360,
+            'adrian'
+            );
+            adrian.setInteractive()
+            .setScale(1.7)
+            .setOrigin(0.5,0.5)
+            .on('pointerdown', () => {
+                this.showMessage("What's up dog");
+                this.add.tween({
+                    targets: adrian,
+                    y: '-=' + this.s,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+        });
+
+        this.add.text(50, 50, "You melt the dragon with\nur pizza roll vomit and live to tell\nthe tale of The Lava Za.", {
+            stroke: '#000000',
+            strokeThickness: 5,
+            fill: '#00ff00'
+        }).setFontSize(50);
+        this.add.text(50, 200, "Click anywhere to restart.", {
+            stroke: '#000000',
+            strokeThickness: 5,
+        }).setFontSize(20);
+        this.input.on('pointerdown', () => this.scene.start('titleintro'));
     }
 }
 
@@ -637,8 +873,7 @@ const game = new Phaser.Game({
         height: 720
     },
     backgroundColor: 0x78909C,
-    //BeginIntro, StudioIntro, TitleIntro, TutorialZone, ForestHub, CaveTunnel
-    scene: [ForestHub, CaveTunnel, House, DragonsDen, Outro],
+    scene: [BeginIntro, StudioIntro, TitleIntro, TutorialZone, ForestHub, CaveTunnel, House, DragonsDen, LossOutro, VictoryOutro],
     title: "Adventure Game",
 });
 

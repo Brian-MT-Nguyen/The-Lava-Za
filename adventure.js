@@ -63,6 +63,17 @@ class AdventureScene extends Phaser.Scene {
         });
     }
 
+    showMessageColor(message, color) {
+        this.messageBox.setText(message);
+        this.messageBox.setTint(color);
+        this.tweens.add({
+            targets: this.messageBox,
+            alpha: { from: 1, to: 0 },
+            easing: 'Quintic.in',
+            duration: 4 * this.transitionDuration
+        });
+    }
+
     updateInventory() {
         if (this.inventory.length > 0) {
             this.tweens.add({
@@ -135,6 +146,14 @@ class AdventureScene extends Phaser.Scene {
             this.inventory = this.inventory.filter((e) => e != item);
             this.updateInventory();
         });
+    }
+
+    cleanup(itemArr) {
+        for(let i = 0; i < itemArr.length; i += 2) {
+            if(this.hasItem(itemArr[i])) {
+                itemArr[i+1].destroy();
+            }
+        }
     }
 
     gotoScene(key) {
