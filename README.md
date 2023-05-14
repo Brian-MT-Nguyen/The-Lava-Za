@@ -1,4 +1,4 @@
-A simple adventure game by Brian Nguyen based on a simple adventure game engine by [Adam Smith](https://github.com/rndmcnlly).
+A simple adventure game by Brian Nguyen based on a simple adventure game engine by [Adam Smith](https://github.com/rndmcnlly).\
 Link to [The Lava Za](https://brian-mt-nguyen.github.io/The-Lava-Za/)
 Code requirements:
 - **4+ scenes based on `AdventureScene`**:
